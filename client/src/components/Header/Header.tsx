@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Toolbar } from 'primereact/toolbar';
 import Image from 'next/image';
 import { Button } from 'primereact/button';
 
-export default function BasicDemo() {
+export default function Header() {
   const startContent = (
     <>
       <Image src="/logo.png" alt="Logo" width={35} height={35} />
@@ -31,7 +30,7 @@ export default function BasicDemo() {
           border: 'none',
           backgroundImage: 'none',
           filter: 'none',
-          padding: '0.4rem 1rem '
+          padding: '0.4rem .8rem '
         }} />
     </div>
   );
