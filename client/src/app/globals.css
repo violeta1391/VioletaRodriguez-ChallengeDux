@@ -15,21 +15,13 @@ html, body {
 
 /* Home menu*/
 .menu-custom {
-  overflow-y: hidden;
-  background-color: #333;        
-  margin: 0;
-  padding: 0;
-  width: 65px; 
-  height: calc(100vh - 50px);            
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: none;
-  box-shadow: none;
-  color: white;
 }
 .p-menu {
   border-radius: 0;
+  padding: 0;
 }
 .menu-custom .p-menuitem-link,
 .menu-custom .p-menuitem-link:focus,

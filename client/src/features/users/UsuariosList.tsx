@@ -22,7 +22,7 @@ export const UsuariosList = () => {
 
   const { data, total, loading, error } = useApi({
     page: 1,
-    limit: 10,
+    limit: 5,
     search,
     estado: selectedEstado,
     sector: selectedSector
