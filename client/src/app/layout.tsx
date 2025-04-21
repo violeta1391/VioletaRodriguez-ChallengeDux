@@ -6,6 +6,7 @@ import 'primeflex/primeflex.css';
 import { PrimeReactProvider } from 'primereact/api';
 import type { ReactNode } from 'react';
 import Header from '@/components/Header/Header';
+import HomeMenu from '@/components/HomeMenu/HomeMenu';
 
 export const metadata = {
   title: 'Challenge Dux',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <PrimeReactProvider value={{ ripple: true }}>
           <Header />
+          <HomeMenu />
           {children}
         </PrimeReactProvider>
       </body>

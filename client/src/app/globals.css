@@ -4,11 +4,42 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
-body {
+html, body {
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
-
 :root {
   --blue-color: #0763E7;
 }
+
+/* Home menu*/
+.menu-custom {
+  overflow-y: hidden;
+  background-color: #333;        
+  margin: 0;
+  padding: 0;
+  width: 65px;
+  height: calc(100vh - 50px);             
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  box-shadow: none;
+  color: white;
+}
+.p-menu {
+  border-radius: 0;
+}
+.menu-custom .p-menuitem-link,
+.menu-custom .p-menuitem-link:focus,
+.menu-custom .p-menuitem-link:active,
+.menu-custom .p-menuitem-link:hover {
+  background-color: #333;
+  box-shadow: none !important;
+  outline: none;
+  color: white;
+}
+
+
 
