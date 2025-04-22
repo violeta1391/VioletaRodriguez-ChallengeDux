@@ -33,5 +33,14 @@ html, body {
   color: white;
 }
 
+.user-link {
+  color: var(--primary-color);  
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.user-link:hover {
+  color: #2563eb; 
+  text-decoration: underline;
+}
 
 

@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useMemo } from 'react';
 import { User } from '@/types/User';
 import { useApi } from '@/hooks/useApi';
 import { createUser, updateUser, deleteUser } from '@/services/userService';
@@ -12,47 +13,72 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 
-const estados = ['ACTIVO', 'INACTIVO'];
+type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
+
+const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
 const sectores = [1000];
 
 export const UsuariosList = () => {
   const [search, setSearch] = useState('');
-  const [selectedEstado, setSelectedEstado] = useState<"ACTIVO" | "INACTIVO" | undefined>(undefined);
+  const [selectedEstado, setSelectedEstado] = useState<Estado>('TODOS');
   const [selectedSector, setSelectedSector] = useState<number>(1000);
 
-  const { data, total, loading, error } = useApi({
-    page: 1,
-    limit: 5,
-    search,
-    estado: selectedEstado,
-    sector: selectedSector
-  });
+  const { data, loading, error, refetch } = useApi({ sector: selectedSector });
 
   const [createVisible, setCreateVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  const [rows, setRows] = useState(() => {
+    const stored = localStorage.getItem('usuarios-rows');
+    return stored ? parseInt(stored) : 10;
+  });
+  const [first, setFirst] = useState(0);
+
+  const resetFilters = () => {
+    setSearch('');
+    setSelectedEstado('TODOS');
+    setSelectedSector(1000);
+  };
+
+  const filteredData = useMemo(() => {
+    const estadosValidos = selectedEstado === 'TODOS'
+      ? ['ACTIVO', 'INACTIVO']
+      : [selectedEstado];
+
+    return data.filter((user) => {
+      const matchEstado = estadosValidos.includes(user.estado);
+      const matchSearch = user.usuario
+        .toUpperCase()
+        .includes(search.toUpperCase());
+      return matchEstado && matchSearch;
+    });
+  }, [data, search, selectedEstado]);
+
   const handleCreateUser = async (user: Omit<User, 'id'>) => {
     await createUser(user);
     setCreateVisible(false);
-    location.reload();
+    resetFilters();
+    refetch();
   };
 
   const handleUpdateUser = async (user: Omit<User, 'id'>) => {
     if (!selectedUser) return;
     await updateUser(selectedUser.id, user);
     setEditVisible(false);
-    location.reload();
+    resetFilters();
+    refetch();
   };
 
   const handleDeleteUser = (user: User) => {
     confirmDialog({
-      message: `¿Estás segura de eliminar a "${user.usuario}"?`,
+      message: `¿Estás seguro de eliminar a "${user.usuario}"?`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
         await deleteUser(user.id);
-        location.reload();
+        resetFilters();
+        refetch();
       }
     });
   };
@@ -97,7 +123,7 @@ export const UsuariosList = () => {
 
         <Dropdown
           value={selectedEstado}
-          options={[{ label: 'Todos', value: undefined }, ...estados.map(e => ({ label: e, value: e }))]}
+          options={estados.map(e => ({ label: e.charAt(0) + e.slice(1).toLowerCase(), value: e }))}
           onChange={(e) => setSelectedEstado(e.value)}
           placeholder="Filtrar por estado"
           className="w-15rem"
@@ -114,13 +140,70 @@ export const UsuariosList = () => {
 
       <ConfirmDialog />
 
-      <DataTable value={data} paginator rows={10} totalRecords={total} responsiveLayout="scroll">
-        <Column field="id" header="ID" sortable />
-        <Column field="usuario" header="Usuario" sortable />
-        <Column field="estado" header="Estado" sortable />
-        <Column field="sector" header="Sector" sortable />
-        <Column header="Acciones" body={actionTemplate} />
+      <DataTable
+        value={filteredData}
+        paginator
+        first={first}
+        rows={rows}
+        onPage={(e) => {
+          setFirst(e.first);         
+          setRows(e.rows);             
+          localStorage.setItem('usuarios-rows', e.rows.toString());
+        }}
+        rowsPerPageOptions={[5, 10, 20, 50]}
+        totalRecords={filteredData.length}
+        responsiveLayout="scroll"
+        className="p-datatable-striped"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      >
+        <Column
+          field="id"
+          header="ID"
+          sortable
+          className="w-1/4 text-left"
+        />
+
+        <Column
+          field="usuario"
+          header="Usuario"
+          sortable
+          className="w-1/4 text-left"
+          body={(rowData: User) => (
+            <a
+              onClick={() => {
+                setSelectedUser(rowData);
+                setEditVisible(true);
+              }}
+              className="user-link"
+            >
+              {rowData.usuario}
+            </a>
+          )}
+        />
+
+        <Column
+          field="estado"
+          header="Estado"
+          sortable
+          body={(rowData: User) => (
+            <span
+              className={`${rowData.estado === 'ACTIVO' ? 'text-green-600' : 'text-red-600'
+                }`}
+            >
+              {rowData.estado}
+            </span>
+          )}
+          className="w-1/4 text-left"
+        />
+
+        <Column
+          field="sector"
+          header="Sector"
+          sortable
+          className="w-1/4 text-left"
+        />
       </DataTable>
+
 
       <Dialog
         header="Crear Usuario"
