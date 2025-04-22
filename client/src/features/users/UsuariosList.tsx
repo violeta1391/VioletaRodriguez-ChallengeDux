@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { User } from '@/types/User';
 import { useApi } from '@/hooks/useApi';
 import { createUser, updateUser, deleteUser } from '@/services/userService';
@@ -12,34 +12,68 @@ import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
+import { ToggleButton } from 'primereact/togglebutton';
+import { useSector } from '@/SectorContext/SectorContext';
 
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
-
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
-const sectores = [1000];
 
 export const UsuariosList = () => {
   const [search, setSearch] = useState('');
   const [selectedEstado, setSelectedEstado] = useState<Estado>('TODOS');
-  const [selectedSector, setSelectedSector] = useState<number>(1000);
 
-  const { data, loading, error, refetch } = useApi({ sector: selectedSector });
+  const {
+    sector,
+    setSector,
+    sectorMode,
+    toggleSectorMode,
+    sectores,
+    setSectores
+  } = useSector();
+
+  const { data, loading, error, refetch } = useApi();
 
   const [createVisible, setCreateVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const [rows, setRows] = useState(() => {
-    const stored = localStorage.getItem('usuarios-rows');
-    return stored ? parseInt(stored) : 10;
-  });
+  const [rows, setRows] = useState(10);
   const [first, setFirst] = useState(0);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('usuarios-rows');
+    if (stored) {
+      setRows(parseInt(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    const uniqueSectores = new Set<number>();
+    data.forEach((user) => user.sector && uniqueSectores.add(user.sector));
+    setSectores(Array.from(uniqueSectores).sort((a, b) => a - b));
+  }, [data, setSectores]);
+
+  useEffect(() => {
+    if (sectorMode === 'oneSector') {
+      setSector(1000);
+    }
+  }, [sectorMode, setSector]);
 
   const resetFilters = () => {
     setSearch('');
     setSelectedEstado('TODOS');
-    setSelectedSector(1000);
+    setSector(1000);
   };
+
+  const sectorOptions = useMemo(() => {
+    if (sectorMode === 'oneSector') {
+      return [{ label: '1000', value: 1000 }];
+    }
+    return [
+      { label: 'Todos', value: 0 },
+      ...sectores.map((s) => ({ label: s.toString(), value: s }))
+    ];
+  }, [sectorMode, sectores]);
 
   const filteredData = useMemo(() => {
     const estadosValidos = selectedEstado === 'TODOS'
@@ -48,12 +82,18 @@ export const UsuariosList = () => {
 
     return data.filter((user) => {
       const matchEstado = estadosValidos.includes(user.estado);
-      const matchSearch = user.usuario
-        .toUpperCase()
-        .includes(search.toUpperCase());
-      return matchEstado && matchSearch;
+      const matchSearch = typeof user.usuario === 'string'
+        ? user.usuario.toUpperCase().includes(search.toUpperCase())
+        : false;
+      const matchSector = sectorMode === 'oneSector'
+        ? true
+        : sector === 0
+          ? true
+          : user.sector === sector;
+
+      return matchEstado && matchSearch && matchSector;
     });
-  }, [data, search, selectedEstado]);
+  }, [data, search, selectedEstado, sector, sectorMode]);
 
   const handleCreateUser = async (user: Omit<User, 'id'>) => {
     await createUser(user);
@@ -72,7 +112,7 @@ export const UsuariosList = () => {
 
   const handleDeleteUser = (user: User) => {
     confirmDialog({
-      message: `¿Estás seguro de eliminar a "${user.usuario}"?`,
+      message: `¿Estás segura de eliminar a "${user.usuario}"?`,
       header: 'Confirmar eliminación',
       icon: 'pi pi-exclamation-triangle',
       accept: async () => {
@@ -82,24 +122,6 @@ export const UsuariosList = () => {
       }
     });
   };
-
-  const actionTemplate = (rowData: User) => (
-    <div className="flex gap-2">
-      <Button
-        icon="pi pi-pencil"
-        severity="info"
-        onClick={() => {
-          setSelectedUser(rowData);
-          setEditVisible(true);
-        }}
-      />
-      <Button
-        icon="pi pi-trash"
-        severity="danger"
-        onClick={() => handleDeleteUser(rowData)}
-      />
-    </div>
-  );
 
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -111,7 +133,7 @@ export const UsuariosList = () => {
         <Button label="Nuevo Usuario" icon="pi pi-plus" onClick={() => setCreateVisible(true)} />
       </div>
 
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-4 align-items-center">
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText
@@ -130,11 +152,19 @@ export const UsuariosList = () => {
         />
 
         <Dropdown
-          value={selectedSector}
-          options={sectores.map(s => ({ label: s.toString(), value: s }))}
-          onChange={(e) => setSelectedSector(e.value)}
+          value={sector}
+          options={sectorOptions}
+          onChange={(e) => setSector(e.value)}
           placeholder="Filtrar por sector"
           className="w-15rem"
+        />
+
+        <ToggleButton
+          checked={sectorMode === 'oneSector'}
+          onChange={toggleSectorMode}
+          onIcon="pi pi-filter"
+          offIcon="pi pi-globe"
+          className="p-button-rounded p-button-text"
         />
       </div>
 
@@ -146,8 +176,8 @@ export const UsuariosList = () => {
         first={first}
         rows={rows}
         onPage={(e) => {
-          setFirst(e.first);         
-          setRows(e.rows);             
+          setFirst(e.first);
+          setRows(e.rows);
           localStorage.setItem('usuarios-rows', e.rows.toString());
         }}
         rowsPerPageOptions={[5, 10, 20, 50]}
@@ -156,12 +186,7 @@ export const UsuariosList = () => {
         className="p-datatable-striped"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
       >
-        <Column
-          field="id"
-          header="ID"
-          sortable
-          className="w-1/4 text-left"
-        />
+        <Column field="id" header="ID" sortable className="w-1/4 text-left" />
 
         <Column
           field="usuario"
@@ -186,24 +211,15 @@ export const UsuariosList = () => {
           header="Estado"
           sortable
           body={(rowData: User) => (
-            <span
-              className={`${rowData.estado === 'ACTIVO' ? 'text-green-600' : 'text-red-600'
-                }`}
-            >
+            <span className={rowData.estado === 'ACTIVO' ? 'text-green-600' : 'text-red-600'}>
               {rowData.estado}
             </span>
           )}
           className="w-1/4 text-left"
         />
 
-        <Column
-          field="sector"
-          header="Sector"
-          sortable
-          className="w-1/4 text-left"
-        />
+        <Column field="sector" header="Sector" sortable className="w-1/4 text-left" />
       </DataTable>
-
 
       <Dialog
         header="Crear Usuario"

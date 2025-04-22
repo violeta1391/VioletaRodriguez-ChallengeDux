@@ -1,35 +1,31 @@
 import { useEffect, useState } from 'react';
 import api from '@/services/apiService';
 import { User } from '@/types/User';
-import { buildQuery } from '@/utils/buildQuery';
+import { useSector } from '@/SectorContext/SectorContext';
 
-interface UseApiParams {
-  sector: number;
-}
-
-export const useApi = ({ sector }: UseApiParams) => {
+export const useApi = () => {
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const query = buildQuery({ sector });
-      const res = await api.get<User[]>(`personal${query}`);
-      setData(res.data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { sector, sectorMode } = useSector();
 
   useEffect(() => {
-    fetchData();
-  }, [sector]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const query = sectorMode === 'oneSector' ? `?sector=${sector}` : '';
+        const res = await api.get<User[]>(`personal${query}`);
+        setData(res.data);
+      } catch (err) {
+        setError('Error al obtener usuarios');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return { data, loading, error, refetch: fetchData };
+    fetchData();
+  }, [sector, sectorMode]);
+
+  return { data, loading, error, refetch: () => setLoading(true) };
 };
