@@ -1,10 +1,12 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { User } from '@/types/User';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
 import { classNames } from 'primereact/utils';
+import { ConfirmButton } from '../Buttons/ConfirmButton';
+import { CancelButton } from '../Buttons/CancelButton';
 
 interface Props {
   initialData?: Partial<User>;
@@ -52,12 +54,12 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
   return (
     <div className="p-fluid">
       <div className="field mb-4">
-        <label htmlFor="id">ID</label>
+        <label htmlFor="id">Id</label>
         <InputText id="id" value={initialData.id ?? 'ID AUTOASIGNADO'} disabled />
       </div>
 
       <div className="field mb-4">
-        <label htmlFor="usuario">Nombre de Usuario</label>
+        <label htmlFor="usuario">Nombre</label>
         <InputText
           id="usuario"
           value={usuario}
@@ -89,9 +91,9 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
         />
       </div>
 
-      <div className="flex justify-content-end gap-2 mt-4">
-        <Button label="Cancelar" severity="secondary" onClick={onCancel} />
-        <Button label="Guardar" severity="success" onClick={handleSubmit} />
+      <div className="flex justify-content-center gap-3 mt-4 custom-button-container">
+        <ConfirmButton onClick={handleSubmit} />
+        <CancelButton onClick={onCancel} />
       </div>
     </div>
   );

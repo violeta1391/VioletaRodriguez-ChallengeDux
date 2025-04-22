@@ -4,16 +4,15 @@ import { useState, useMemo, useEffect } from 'react';
 import { User } from '@/types/User';
 import { useApi } from '@/hooks/useApi';
 import { createUser, updateUser, deleteUser } from '@/services/userService';
-import { UserForm } from '@/components/UserForm/UserForm';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { ToggleButton } from 'primereact/togglebutton';
 import { useSector } from '@/SectorContext/SectorContext';
+import { UserModal } from '@/components/UserModal/UserModal';
 
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
@@ -221,29 +220,31 @@ export const UsuariosList = () => {
         <Column field="sector" header="Sector" sortable className="w-1/4 text-left" />
       </DataTable>
 
-      <Dialog
-        header="Crear Usuario"
+      <UserModal
         visible={createVisible}
+        header="Crear Usuario"
         onHide={() => setCreateVisible(false)}
-        style={{ width: '400px' }}
-        modal
-      >
-        <UserForm onSubmit={handleCreateUser} onCancel={() => setCreateVisible(false)} />
-      </Dialog>
-
-      <Dialog
-        header="Editar Usuario"
+        onSubmit={handleCreateUser}
+      />
+      <UserModal
         visible={editVisible}
+        header="Editar Usuario"
+        initialData={selectedUser ?? {}}
         onHide={() => setEditVisible(false)}
-        style={{ width: '400px' }}
-        modal
-      >
-        <UserForm
-          initialData={selectedUser ?? {}}
-          onSubmit={handleUpdateUser}
-          onCancel={() => setEditVisible(false)}
-        />
-      </Dialog>
+        onSubmit={handleUpdateUser}
+        onDelete={async (user) => {
+          try {
+            await deleteUser(user.id);
+            setEditVisible(false);
+            setSelectedUser(null);
+            resetFilters();
+            refetch();
+          } catch (error) {
+            console.error('Error al eliminar el usuario:', error);
+          }
+        }}
+      />
+
     </div>
   );
 };
