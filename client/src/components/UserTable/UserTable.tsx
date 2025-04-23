@@ -1,9 +1,11 @@
 'use client';
+
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { User } from '@/types/User';
 import { UserTableProps } from '@/types/UserTableProps';
+import { getSectorLabel } from '@/constants/sectorLabels';
 
 export const UserTable = ({
     users,
@@ -55,7 +57,13 @@ export const UserTable = ({
                     )}
                     className="w-1/4 text-left"
                 />
-                <Column field="sector" header="Sector" sortable className="w-1/4 text-left" />
+                <Column
+                    field="sector"
+                    header="Sector"
+                    sortable
+                    className="w-1/4 text-left"
+                    body={(rowData: User) => getSectorLabel(rowData.sector)}
+                />
             </DataTable>
         </>
     );

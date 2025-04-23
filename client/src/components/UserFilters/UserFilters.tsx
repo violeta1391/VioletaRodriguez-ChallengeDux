@@ -3,6 +3,7 @@ import { SearchInput } from './SearchInput';
 import { StatusDropdown } from './StatusDropdown';
 import { SectorFilter } from './SectorFilter';
 import { UserFiltersProps } from '@/types/UserFiltersProps';
+import { getSectorLabel } from '@/constants/sectorLabels';
 
 export const UserFilters = ({
     search,
@@ -16,6 +17,10 @@ export const UserFilters = ({
     sectorMode,
     toggleSectorMode,
 }: UserFiltersProps) => {
+    const mappedSectorOptions = sectorOptions.map((option) => ({
+        label: getSectorLabel(option.value),
+        value: option.value,
+    }));
     return (
         <div className="grid mb-6 align-items-center w-full">
             <div className="col-12 md:col-4">
@@ -32,7 +37,7 @@ export const UserFilters = ({
                 <SectorFilter
                     sector={sector}
                     setSector={setSector}
-                    sectorOptions={sectorOptions}
+                    sectorOptions={mappedSectorOptions}
                     sectorMode={sectorMode}
                     toggleSectorMode={toggleSectorMode}
                 />

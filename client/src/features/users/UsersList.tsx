@@ -115,11 +115,15 @@ export const UsersList = () => {
   }
   return (
     <div className="p-4">
-      <div className="flex justify-content-between align-items-center mb-4">
-        <h2>Usuarios</h2>
-        <Button label="Nuevo Usuario" icon="pi pi-plus" onClick={() => setCreateVisible(true)} />
+      <div className="flex justify-content-between align-items-center mb-6">
+        <h2 className="text-2xl font-bold m-0">Usuarios</h2>
+        <Button
+          label="Nuevo Usuario"
+          icon="pi pi-plus"
+          className="p-button p-button-primary"
+          onClick={() => setCreateVisible(true)}
+        />
       </div>
-
       <UserFilters
         search={search}
         setSearch={setSearch}

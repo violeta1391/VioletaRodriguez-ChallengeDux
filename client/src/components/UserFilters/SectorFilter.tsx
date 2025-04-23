@@ -42,7 +42,6 @@ export const SectorFilter = ({
         <Button
             icon="pi pi-sliders-h"
             className="button-icono-gris"
-            tooltip="Editar"
             onClick={() => { }}
         />
     </div>

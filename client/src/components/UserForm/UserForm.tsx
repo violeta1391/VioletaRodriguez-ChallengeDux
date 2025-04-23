@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { User } from '@/types/User';
 import { InputText } from 'primereact/inputtext';
@@ -7,6 +6,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { classNames } from 'primereact/utils';
 import { ConfirmButton } from '../Buttons/ConfirmButton';
 import { CancelButton } from '../Buttons/CancelButton';
+import { SECTOR_LABELS } from '@/constants/sectorLabels';
 
 interface Props {
   initialData?: Partial<User>;
@@ -15,13 +15,15 @@ interface Props {
 }
 
 const estados = ['ACTIVO', 'INACTIVO'] as const;
-const sectores = [1000];
 
 export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
   const [usuario, setUsuario] = useState('');
   const [estado, setEstado] = useState<User['estado']>('ACTIVO');
-  const [sector, setSector] = useState<number>(1000);
+  const [sector, setSector] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+
+  const isEditMode = initialData?.id !== undefined;
+  const isReadOnly = isEditMode && initialData?.sector !== 1000;
 
   useEffect(() => {
     if (initialData?.usuario) {
@@ -37,11 +39,15 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (usuario.trim()) {
+
+    const isUsuarioValido = usuario.trim() !== '';
+    const isSectorValido = sector === 1000;
+
+    if (isUsuarioValido && isSectorValido) {
       const user: Omit<User, 'id'> = {
         usuario: usuario.toUpperCase(),
         estado: estado.toUpperCase() as User['estado'],
-        sector
+        sector: sector!,
       };
       onSubmit(user);
     }
@@ -51,11 +57,16 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
     setUsuario(e.target.value);
   };
 
+  const sectorOptions = Object.entries(SECTOR_LABELS).map(([value, label]) => ({
+    label,
+    value: Number(value),
+  }));
+
   return (
     <div className="p-fluid">
       <div className="field mb-4">
         <label htmlFor="id">Id</label>
-        <InputText id="id" value={initialData.id ?? 'ID AUTOASIGNADO'} disabled />
+        <InputText id="id" value={initialData.id !== undefined ? String(initialData.id) : 'ID AUTOASIGNADO'} disabled />
       </div>
 
       <div className="field mb-4">
@@ -64,9 +75,12 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
           id="usuario"
           value={usuario}
           onChange={handleUsuarioChange}
+          disabled={isReadOnly}
           className={classNames({ 'p-invalid': submitted && !usuario })}
         />
-        {submitted && !usuario && <small className="p-error">El nombre es obligatorio.</small>}
+        {submitted && !usuario && !isReadOnly && (
+          <small className="p-error">El nombre es obligatorio.</small>
+        )}
       </div>
 
       <div className="field mb-4">
@@ -77,6 +91,7 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
           options={estados.map((e) => ({ label: e, value: e }))}
           onChange={(e) => setEstado(e.value)}
           placeholder="Seleccionar estado"
+          disabled={isReadOnly}
         />
       </div>
 
@@ -85,14 +100,25 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
         <Dropdown
           id="sector"
           value={sector}
-          options={sectores.map((s) => ({ label: s.toString(), value: s }))}
+          options={sectorOptions}
           onChange={(e) => setSector(e.value)}
           placeholder="Seleccionar sector"
+          disabled={isReadOnly || isEditMode}
+          className={classNames({ 'p-invalid': submitted && sector !== 1000 })}
         />
+        {submitted && sector !== 1000 && !isReadOnly && (
+          <small className="p-error">Solo se permite el sector Marketing (1000).</small>
+        )}
       </div>
 
+      {isReadOnly && (
+        <div className="mt-3 mb-4 text-center text-sm text-red-500">
+          No tiene permitido realizar modificaciones. Solo los usuarios del sector Marketing (1000) pueden ser editados.
+        </div>
+      )}
+
       <div className="flex justify-content-center gap-3 mt-4 custom-button-container">
-        <ConfirmButton onClick={handleSubmit} />
+        <ConfirmButton onClick={handleSubmit} disabled={isReadOnly} />
         <CancelButton onClick={onCancel} />
       </div>
     </div>

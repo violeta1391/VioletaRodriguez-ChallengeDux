@@ -18,8 +18,10 @@ export const UserModal = ({
   onDelete,
   deleting = false,
 }: UserModalProps) => {
-  const deleteBtnRef = useRef(null);
+  const deleteBtnRef = useRef<Button>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const canDelete = initialData?.sector === 1000;
 
   const customHeader = (
     <div
@@ -35,13 +37,15 @@ export const UserModal = ({
     </div>
   );
 
-  const footerContent = initialData?.id ? (
+  const footerContent = initialData?.id && canDelete ? (
     <div className="flex justify-content-end border-top-1 surface-border pt-3 px-4">
       <Button
         severity="danger"
         ref={deleteBtnRef}
         disabled={deleting}
-        onClick={() => setShowDeleteDialog(true)}
+        onClick={() => {
+          if (canDelete) setShowDeleteDialog(true);
+        }}
       >
         {deleting ? (
           <div className="flex align-items-center gap-2">
@@ -59,7 +63,7 @@ export const UserModal = ({
           </>
         )}
       </Button>
-      <Tooltip target={deleteBtnRef} content="Eliminar usuario" />
+      <Tooltip target={deleteBtnRef.current as unknown as HTMLElement} content="Eliminar usuario del sector Marketing (1000)" />
     </div>
   ) : null;
 
@@ -84,7 +88,7 @@ export const UserModal = ({
         </div>
       </Dialog>
 
-      {initialData?.id && onDelete && (
+      {initialData?.id && onDelete && canDelete && (
         <DeleteConfirmDialog
           user={initialData as User}
           visible={showDeleteDialog}
