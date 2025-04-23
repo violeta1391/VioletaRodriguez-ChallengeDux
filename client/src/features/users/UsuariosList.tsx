@@ -3,14 +3,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { User } from '@/types/User';
 import { useApi } from '@/hooks/useApi';
 import { createUser, updateUser, deleteUser } from '@/services/userService';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useSector } from '@/SectorContext/SectorContext';
+import { useSector } from '@/context/SectorContext/SectorContext';
 import { UserModal } from '@/components/UserModal/UserModal';
 import { UserFilters } from '@/components/UserFilters/UserFilters';
-
+import { UserTable } from '@/components/UserTable/UserTable';
+import { LoaderOrError } from '@/components/LoaderOrError/LoaderOrError';
 
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
@@ -29,11 +27,9 @@ export const UsuariosList = () => {
   } = useSector();
 
   const { data, loading, error, refetch } = useApi();
-
   const [createVisible, setCreateVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
   const [rows, setRows] = useState(10);
   const [first, setFirst] = useState(0);
 
@@ -107,28 +103,23 @@ export const UsuariosList = () => {
     refetch();
   };
 
-  const handleDeleteUser = (user: User) => {
-    confirmDialog({
-      message: `¿Estás segura de eliminar a "${user.usuario}"?`,
-      header: 'Confirmar eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      accept: async () => {
-        await deleteUser(user.id);
-        resetFilters();
-        refetch();
-      }
-    });
-  };
-
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+  const isLoadingOrError = loading || error;
+  if (isLoadingOrError) {
+    return (
+      <LoaderOrError
+        loading={loading}
+        error={error}
+        errorMessage="Error al cargar la lista de usuarios"
+      />
+    );
+  }
   return (
     <div className="p-4">
       <div className="flex justify-content-between align-items-center mb-4">
         <h2>Usuarios</h2>
         <Button label="Nuevo Usuario" icon="pi pi-plus" onClick={() => setCreateVisible(true)} />
       </div>
+
       <UserFilters
         search={search}
         setSearch={setSearch}
@@ -141,67 +132,23 @@ export const UsuariosList = () => {
         sectorMode={sectorMode}
         toggleSectorMode={toggleSectorMode}
       />
-
-      <ConfirmDialog />
-
-      <DataTable
-        value={filteredData}
-        paginator
-        first={first}
+      <UserTable
+        users={filteredData}
         rows={rows}
-        onPage={(e) => {
-          setFirst(e.first);
-          setRows(e.rows);
-          localStorage.setItem('usuarios-rows', e.rows.toString());
+        first={first}
+        setRows={setRows}
+        setFirst={setFirst}
+        onUserClick={(user) => {
+          setSelectedUser(user);
+          setEditVisible(true);
         }}
-        rowsPerPageOptions={[5, 10, 20, 50]}
-        totalRecords={filteredData.length}
-        responsiveLayout="scroll"
-        className="p-datatable-striped"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-      >
-        <Column field="id" header="ID" sortable className="w-1/4 text-left" />
-
-        <Column
-          field="usuario"
-          header="Usuario"
-          sortable
-          className="w-1/4 text-left"
-          body={(rowData: User) => (
-            <a
-              onClick={() => {
-                setSelectedUser(rowData);
-                setEditVisible(true);
-              }}
-              className="user-link"
-            >
-              {rowData.usuario}
-            </a>
-          )}
-        />
-
-        <Column
-          field="estado"
-          header="Estado"
-          sortable
-          body={(rowData: User) => (
-            <span className={rowData.estado === 'ACTIVO' ? 'text-green-600' : 'text-red-600'}>
-              {rowData.estado}
-            </span>
-          )}
-          className="w-1/4 text-left"
-        />
-
-        <Column field="sector" header="Sector" sortable className="w-1/4 text-left" />
-      </DataTable>
-
+      />
       <UserModal
         visible={createVisible}
         header="Crear Usuario"
         onHide={() => setCreateVisible(false)}
         onSubmit={handleCreateUser}
       />
-
       <UserModal
         visible={editVisible}
         header="Editar Usuario"

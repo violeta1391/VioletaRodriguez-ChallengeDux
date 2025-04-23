@@ -7,7 +7,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import type { ReactNode } from 'react';
 import Header from '@/components/Header/Header';
 import HomeMenu from '@/components/HomeMenu/HomeMenu';
-import { SectorProvider } from '@/SectorContext/SectorContext';
+import { SectorProvider } from '@/context/SectorContext/SectorContext';
 
 export const metadata = {
   title: 'Challenge Dux',

@@ -1,5 +1,4 @@
 'use client';
-
 import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { UserForm } from '@/components/UserForm/UserForm';
@@ -8,16 +7,7 @@ import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { DeleteConfirmDialog } from '@/components/DeleteConfirmDialog/DeleteConfirmDialog';
-
-interface UserModalProps {
-  visible: boolean;
-  header: string;
-  initialData?: Partial<User>;
-  onHide: () => void;
-  onSubmit: (user: Omit<User, 'id'>) => void;
-  onDelete?: (user: User) => void;
-  deleting?: boolean;
-}
+import { UserModalProps } from '@/types/UserModalProps';
 
 export const UserModal = ({
   visible,

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import api from '@/services/apiService';
 import { User } from '@/types/User';
-import { useSector } from '@/SectorContext/SectorContext';
+import { useSector } from '@/context/SectorContext/SectorContext';
 
 export const useApi = () => {
   const [data, setData] = useState<User[]>([]);
