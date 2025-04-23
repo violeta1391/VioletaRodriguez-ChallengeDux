@@ -13,7 +13,7 @@ import { LoaderOrError } from '@/components/LoaderOrError/LoaderOrError';
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
 
-export const UsuariosList = () => {
+export const UsersList = () => {
   const [search, setSearch] = useState('');
   const [selectedEstado, setSelectedEstado] = useState<Estado>('TODOS');
 
