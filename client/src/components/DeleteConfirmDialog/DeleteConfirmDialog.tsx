@@ -1,9 +1,7 @@
 'use client';
-
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { User } from '@/types/User';
-import { useState } from 'react';
 
 interface DeleteConfirmDialogProps {
   user: User;

@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useMemo, useEffect } from 'react';
 import { User } from '@/types/User';
 import { useApi } from '@/hooks/useApi';
@@ -8,11 +7,10 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { ToggleButton } from 'primereact/togglebutton';
 import { useSector } from '@/SectorContext/SectorContext';
 import { UserModal } from '@/components/UserModal/UserModal';
+import { UserFilters } from '@/components/UserFilters/UserFilters';
+
 
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
@@ -131,41 +129,18 @@ export const UsuariosList = () => {
         <h2>Usuarios</h2>
         <Button label="Nuevo Usuario" icon="pi pi-plus" onClick={() => setCreateVisible(true)} />
       </div>
-
-      <div className="flex gap-3 mb-4 align-items-center">
-        <span className="p-input-icon-left">
-          <i className="pi pi-search" />
-          <InputText
-            placeholder="Buscar por nombre"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </span>
-
-        <Dropdown
-          value={selectedEstado}
-          options={estados.map(e => ({ label: e.charAt(0) + e.slice(1).toLowerCase(), value: e }))}
-          onChange={(e) => setSelectedEstado(e.value)}
-          placeholder="Filtrar por estado"
-          className="w-15rem"
-        />
-
-        <Dropdown
-          value={sector}
-          options={sectorOptions}
-          onChange={(e) => setSector(e.value)}
-          placeholder="Filtrar por sector"
-          className="w-15rem"
-        />
-
-        <ToggleButton
-          checked={sectorMode === 'oneSector'}
-          onChange={toggleSectorMode}
-          onIcon="pi pi-filter"
-          offIcon="pi pi-globe"
-          className="p-button-rounded p-button-text"
-        />
-      </div>
+      <UserFilters
+        search={search}
+        setSearch={setSearch}
+        selectedStatus={selectedEstado}
+        setSelectedStatus={setSelectedEstado}
+        statuses={estados}
+        sector={sector}
+        setSector={setSector}
+        sectorOptions={sectorOptions}
+        sectorMode={sectorMode}
+        toggleSectorMode={toggleSectorMode}
+      />
 
       <ConfirmDialog />
 
@@ -226,6 +201,7 @@ export const UsuariosList = () => {
         onHide={() => setCreateVisible(false)}
         onSubmit={handleCreateUser}
       />
+
       <UserModal
         visible={editVisible}
         header="Editar Usuario"
@@ -244,7 +220,6 @@ export const UsuariosList = () => {
           }
         }}
       />
-
     </div>
   );
 };

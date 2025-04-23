@@ -27,7 +27,7 @@ html, body {
 .menu-custom .p-menuitem-link:active,
 .menu-custom .p-menuitem-link:hover {
   background-color: #333;
-  box-shadow: none !important;
+  box-shadow: none;
   outline: none;
   color: white;
 }
@@ -84,7 +84,7 @@ html, body {
 }
 
 .p-confirm-dialog .p-dialog-content {
-  padding-top: 0 !important; 
+  padding-top: 0; 
   padding-bottom: 2.5rem;
   display: flex;
   justify-content: center;
@@ -94,6 +94,47 @@ html, body {
   justify-content: center;
   gap: 1rem;
   padding-bottom: 2rem;
+}
+
+.button-icono-gris {
+  background-color: #4b5563; 
+  color: white;
+  border: none;
+  border-radius: 3px;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputgroup-lupita {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.inputgroup-lupita:focus-within {
+  border-color: #3b82f6;
+}
+
+.p-inputgroup-icon {
+  padding: 0 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.inputgroup-lupita-input {  
+  border: none;
+  box-shadow: none;
+  padding-left: 2.5rem;
 }
 
 
