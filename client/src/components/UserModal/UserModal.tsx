@@ -11,7 +11,6 @@ import { UserModalProps } from '@/types/UserModalProps';
 
 export const UserModal = ({
   visible,
-  header,
   initialData,
   onHide,
   onSubmit,
@@ -20,7 +19,6 @@ export const UserModal = ({
 }: UserModalProps) => {
   const deleteBtnRef = useRef<Button>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
   const canDelete = initialData?.sector === 1000;
 
   const customHeader = (
@@ -87,7 +85,6 @@ export const UserModal = ({
           />
         </div>
       </Dialog>
-
       {initialData?.id && onDelete && canDelete && (
         <DeleteConfirmDialog
           user={initialData as User}

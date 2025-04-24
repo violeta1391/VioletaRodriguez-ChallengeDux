@@ -1,6 +1,7 @@
-
-import { UsersList } from '@/features/users/UsersList';
+import { Suspense } from 'react';
+import { UsersListWrapper } from '@/features/users/UsersListWrapper';
 import { Metadata } from 'next';
+import { LoaderFallback } from '@/components/LoaderOrError/LoaderFallback';
 
 export const metadata: Metadata = {
   title: 'Usuarios',
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function UsuariosPage() {
-  return <UsersList />;
+  return (
+    <Suspense fallback={<LoaderFallback />}>
+      <UsersListWrapper />
+    </Suspense>
+  );
 }

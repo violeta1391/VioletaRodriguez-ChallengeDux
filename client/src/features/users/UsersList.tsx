@@ -13,7 +13,9 @@ import { LoaderOrError } from '@/components/LoaderOrError/LoaderOrError';
 type Estado = 'ACTIVO' | 'INACTIVO' | 'TODOS';
 const estados: Estado[] = ['ACTIVO', 'INACTIVO', 'TODOS'];
 
-export const UsersList = () => {
+interface UsersListProps { initialUsers: User[]; }
+
+export const UsersList = ({ initialUsers }: UsersListProps) => {
   const [search, setSearch] = useState('');
   const [selectedEstado, setSelectedEstado] = useState<Estado>('TODOS');
 

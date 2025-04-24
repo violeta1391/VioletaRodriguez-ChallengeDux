@@ -68,7 +68,6 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
         <label htmlFor="id">Id</label>
         <InputText id="id" value={initialData.id !== undefined ? String(initialData.id) : 'ID AUTOASIGNADO'} disabled />
       </div>
-
       <div className="field mb-4">
         <label htmlFor="usuario">Nombre</label>
         <InputText
@@ -82,7 +81,6 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
           <small className="p-error">El nombre es obligatorio.</small>
         )}
       </div>
-
       <div className="field mb-4">
         <label htmlFor="estado">Estado</label>
         <Dropdown
@@ -94,7 +92,6 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
           disabled={isReadOnly}
         />
       </div>
-
       <div className="field mb-4">
         <label htmlFor="sector">Sector</label>
         <Dropdown
@@ -110,13 +107,11 @@ export const UserForm = ({ initialData = {}, onSubmit, onCancel }: Props) => {
           <small className="p-error">Solo se permite el sector Marketing (1000).</small>
         )}
       </div>
-
       {isReadOnly && (
         <div className="mt-3 mb-4 text-center text-sm text-red-500">
           No tiene permitido realizar modificaciones. Solo los usuarios del sector Marketing (1000) pueden ser editados.
         </div>
       )}
-
       <div className="flex justify-content-center gap-3 mt-4 custom-button-container">
         <ConfirmButton onClick={handleSubmit} disabled={isReadOnly} />
         <CancelButton onClick={onCancel} />

@@ -1,5 +1,4 @@
 'use client';
-
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 type SectorMode = 'oneSector' | 'allSectors';
@@ -23,7 +22,6 @@ export const SectorProvider = ({ children }: { children: ReactNode }) => {
   const toggleSectorMode = () => {
     setSectorMode((prev) => (prev === 'oneSector' ? 'allSectors' : 'oneSector'));
   };
-
   return (
     <SectorContext.Provider
       value={{ sector, setSector, sectorMode, toggleSectorMode, sectores, setSectores }}

@@ -5,7 +5,7 @@ const RESOURCE = 'personal';
 const SECTOR = 1000;
 
 export const fetchAllUsers = async () => {
-    const res = await api.get<User[]>(`${RESOURCE}?sector=${SECTOR}&_sort=id&_order=desc&_limit=1`);
+    const res = await api.get<User[]>(`${RESOURCE}?sector=${SECTOR}&_sort=id&_order=desc`);
     return res.data;
 };
 
