@@ -13,32 +13,128 @@ html, body {
   --blue-color: #0763E7;
 }
 
-/* Home menu*/
 .menu-custom {
-  overflow-y: hidden;
-  background-color: #333;        
-  margin: 0;
-  padding: 0;
-  width: 65px;
-  height: calc(100vh - 50px);             
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: none;
-  box-shadow: none;
-  color: white;
 }
 .p-menu {
   border-radius: 0;
+  padding: 0;
 }
 .menu-custom .p-menuitem-link,
 .menu-custom .p-menuitem-link:focus,
 .menu-custom .p-menuitem-link:active,
 .menu-custom .p-menuitem-link:hover {
   background-color: #333;
-  box-shadow: none !important;
+  box-shadow: none;
   outline: none;
   color: white;
+}
+
+.user-link {
+  color: var(--primary-color);  
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.user-link:hover {
+  color: #2563eb; 
+  text-decoration: underline;
+}
+
+.p-dialog .p-dialog-header {
+  padding: 0rem;
+}
+
+.custom-confirm-button {
+  background-color: var(--blue-color);
+  color: white;
+  border: none;
+  width: 160px;
+  justify-content: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(7, 99, 231, 0.2);
+}
+
+.custom-confirm-button:hover {
+  background-color: #0457c2;
+  box-shadow: 0 6px 16px rgba(7, 99, 231, 0.3);
+}
+
+.custom-cancel-button {
+  background-color: white;
+  color: var(--blue-color);
+  border: 1px solid var(--blue-color);
+  width: 160px;
+  justify-content: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.custom-cancel-button:hover {
+  background-color: #f0f4ff;
+  color: #0457c2;
+  box-shadow: 0 4px 12px rgba(7, 99, 231, 0.15);
+}
+
+.p-confirm-dialog.custom-delete-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 420px;
+}
+
+.p-confirm-dialog .p-dialog-content {
+  padding-top: 0; 
+  padding-bottom: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.p-confirm-dialog .p-dialog-footer {
+  justify-content: center;
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+.button-icono-gris {
+  background-color: #4b5563; 
+  color: white;
+  border: none;
+  border-radius: 3px;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputgroup-lupita {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.inputgroup-lupita:focus-within {
+  border-color: #3b82f6;
+}
+
+.p-inputgroup-icon {
+  padding: 0 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.inputgroup-lupita-input {  
+  border: none;
+  box-shadow: none;
+  padding-left: 2.5rem;
 }
 
 
